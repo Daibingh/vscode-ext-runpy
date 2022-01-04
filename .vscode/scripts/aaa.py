@@ -11,4 +11,6 @@ if __name__ == '__main__':
 
     F = parser.parse_args()
 
-    print("row:", F.row, "col:", F.col)
+    with open(F.doc) as f:
+        text = f.read()
+        print(text.split('\n')[F.row])

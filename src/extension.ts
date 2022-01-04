@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import * as fs from 'fs';
 import * as child_process from 'child_process';
-// import * as hjson from 'hjson';
+import * as glob from 'glob';
 var hjson = require('hjson');
 
 
@@ -39,25 +39,18 @@ function formatCMDArgs(info: any) {
     return `--workdir "${info.workdir}" --doc "${info.doc}" --row ${info.row} --col ${info.col}`;
 }
 
-async function getScriptNames() {
-   
-    let u = await vscode.workspace.findFiles(path.join('.vscode', 'scripts', '*.py'));
-    let ret: string[] = [];
-    for ( let t of u) {
-        ret.push(t.fsPath);
-    }
-    return ret;
+function getScriptNames(workdir: string) {
+    return glob.sync(path.join(workdir, '.vscode', 'scripts', '*.py'));
 }
 
-async function callback() {
-    // vscode.window.showInformationMessage('Hello World from RunPy!');
+function callback() {
     let info = getContexInfo();
     console.log(info.workdir);
     console.log(info.doc);
     console.log(info.row);
     console.log(info.col);
 
-    let items: string[] = await getScriptNames();
+    let items: string[] = getScriptNames(info.workdir);
     vscode.window.showQuickPick(items).then((pyfile) => {
         console.log(pyfile);
         const args = formatCMDArgs(info);
